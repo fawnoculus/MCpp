@@ -1,0 +1,59 @@
+# eclipse
+eclipse/
+*.pydevproject
+.metadata
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.factorypath
+*.launch
+
+# vscode
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+.cproject
+
+# macos
+*.DS_Store
+
+# Visual Studio
+out/
+.vs/
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+
+# Compiled C++ Files
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Other Stuff
+.idea/
+*.log
+build*/
+cmake-build*/
+Makefile
