@@ -66,9 +66,9 @@ namespace Logging {
         );
     }
 
-    inline const auto latestLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/latest.log", true);
-    inline const auto debugLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/debug.log", true);
-    inline const auto dateLogSink = makeDateSink();
-    inline const auto stdoutSink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
-    inline bool isInitialized = false;
+    inline const auto g_latestLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/latest.log", true);
+    inline const auto g_debugLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/debug.log", true);
+    inline const auto g_dateLogSink = makeDateSink();
+    inline const auto g_stdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    inline bool g_isInitialized = false;
 }

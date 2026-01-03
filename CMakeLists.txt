@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 
 include(FetchContent)
 
-set_property(GLOBAL PROPERTY CXX_STANDARD 23) # Would love to use C++ 26 but MSVC doesn't support it jet
+set_property(GLOBAL PROPERTY CXX_STANDARD 23)
 set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
