@@ -9,8 +9,8 @@
 
 using std::string, std::vector, std::optional, std::shared_ptr, std::float64_t;
 
-constexpr int windowWidth = 854;
-constexpr int windowHeight = 480;
+constexpr int g_windowWidth = 854;
+constexpr int g_windowHeight = 480;
 shared_ptr<spdlog::logger> g_glfwLogger = nullptr;
 Client *g_client = nullptr;
 std::mutex g_clientTasksMutex;
@@ -77,7 +77,7 @@ Client::Client()
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     m_logger->debug("Creating Window");
-    m_glfwWindow = glfwCreateWindow(windowWidth, windowHeight, "MCpp", nullptr, nullptr);
+    m_glfwWindow = glfwCreateWindow(g_windowWidth, g_windowHeight, "MCpp", nullptr, nullptr);
     if (!m_glfwWindow)
     {
         m_logger->error("Failed to create Window");
@@ -123,12 +123,15 @@ int Client::run() const
 
         {
             std::lock_guard guard(g_clientTasksMutex);
-            for (std::function clientTask : g_clientTasks)
+            for (const std::function<void(const Client&)>& clientTask : g_clientTasks)
             {
                 clientTask(*this);
             }
             g_clientTasks.clear();
         }
+
+        // 1000 FPS baby TODO: make an actually competent frame-time counter
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // TODO: do rendering here
 
@@ -150,7 +153,7 @@ void Client::setFullscreen(const bool a_fullscreen) const
         glfwSetWindowMonitor(m_glfwWindow, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
     } else
     {
-        glfwSetWindowMonitor(m_glfwWindow, nullptr, 0, 0, windowWidth, windowHeight, GLFW_DONT_CARE);
+        glfwSetWindowMonitor(m_glfwWindow, nullptr, 0, 0, g_windowWidth, g_windowHeight, GLFW_DONT_CARE);
     }
 }
 
