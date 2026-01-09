@@ -24,7 +24,7 @@ private:
     std::shared_ptr<spdlog::logger> m_logger = nullptr;
     ResourceManager *m_resourceManager = nullptr;
     GLFWwindow *m_glfwWindow = nullptr;
-    std::vector<GraphicsPipeline> graphicsPipelines;
+    std::vector<GraphicsPipeline*> m_graphicsPipelines;
     vk::ApplicationInfo m_vkAppInfo;
     vk::raii::Context m_vkContext;
     vk::raii::Instance m_vkInstance = nullptr;

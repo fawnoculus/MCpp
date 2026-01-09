@@ -183,6 +183,7 @@ void VulkanHandler::setWindow(GLFWwindow *a_glfwWindow)
         m_logger->error("Failed to create Window surface");
         throw std::runtime_error("Failed to create Window Surface");
     }
+    m_vkSurface.clear();
     m_vkSurface = vk::raii::SurfaceKHR(m_vkInstance, surface);
 
     pickVkDevice();
@@ -267,6 +268,7 @@ void VulkanHandler::pickVkDevice()
     }
 
     m_logger->debug("Picked Physical Vulkan device: {}", string(currentBest.getProperties().deviceName));
+    m_vkPhysicalDevice.clear();
     m_vkPhysicalDevice = currentBest;
 
     float queuePriority = 0.5f;
@@ -292,11 +294,17 @@ void VulkanHandler::pickVkDevice()
         .ppEnabledExtensionNames = requiredDeviceExtensions.data()
     };
 
+    m_vkDevice.clear();
     m_vkDevice = vk::raii::Device(currentBest, deviceCreateInfo);
+
     m_vkGraphicsQueueFamilyIndex = currentBestCheckResult.graphicsQueueFamilyIndex;
+    m_vkGraphicsQueue.clear();
     m_vkGraphicsQueue = vk::raii::Queue(m_vkDevice, static_cast<uint32_t>(currentBestCheckResult.graphicsQueueFamilyIndex), 0);
+
     m_vkPresentQueueFamilyIndex = currentBestCheckResult.presentQueueFamilyIndex;
+    m_vkPresentQueue.clear();
     m_vkPresentQueue = vk::raii::Queue(m_vkDevice, static_cast<uint32_t>(currentBestCheckResult.presentQueueFamilyIndex), 0);
+
     m_vkSurfaceFormat = currentBestCheckResult.surfaceFormat.value();
     m_vkSwapChainImageFormat = m_vkSurfaceFormat.format;
 
@@ -305,9 +313,12 @@ void VulkanHandler::pickVkDevice()
         m_resourceManager->setVkDevice(m_vkDevice);
     }
 
-    for (GraphicsPipeline pipeline : graphicsPipelines)
+    for (GraphicsPipeline *pipeline : m_graphicsPipelines)
     {
-        pipeline.setVkDevice(m_vkDevice);
+        if (pipeline != nullptr)
+        {
+            pipeline->setVkDevice(m_vkDevice);
+        }
     }
 }
 
@@ -471,6 +482,7 @@ void VulkanHandler::createVkSwapChain()
         swapChainCreateInfo.pQueueFamilyIndices = nullptr;
     }
 
+    m_vkSwapChain.clear();
     m_vkSwapChain = vk::raii::SwapchainKHR(m_vkDevice, swapChainCreateInfo);
     m_vkSwapChainImages = m_vkSwapChain.getImages();
 }
