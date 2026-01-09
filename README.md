@@ -3,12 +3,12 @@ A simple Minecraft Clone in C++ using Vulkan.
 
 ## Building
 You'll need:
-- [VulkanSDK](https://vulkan.lunarg.com/sdk/home)
-- Anything that can build a Cmake Project
+1. [VulkanSDK](https://vulkan.lunarg.com/sdk/home)
+2. Anything that can build a Cmake Project
 
 that's it! Everything else is (should be) automatically downloaded by CMake.
 
-for Debug builds specifically you'll also need "vulkan validation layers",
+for Debug builds of the Client you'll also need "vulkan validation layers",
 though you can build without them by building RelWithDebInfo, Release or anything else that isn't Debug.
 
 ### Download "vulkan validation layers"

@@ -5,17 +5,22 @@ include(FetchContent)
 set_property(GLOBAL PROPERTY CXX_STANDARD 23)
 set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(MCPP_VERSION_MAJOR 0)
+set(MCPP_VERSION_MINOR 0)
+set(MCPP_VERSION_PATCH 0)
 
-project(MCpp VERSION 0.0.1
-        LANGUAGES CXX C
+project(MCpp LANGUAGES CXX C
         DESCRIPTION "Minecraft Clone in C++"
+        VERSION ${MCPP_VERSION_MAJOR}.${MCPP_VERSION_MINOR}.${MCPP_VERSION_PATCH}
 )
+
+message(STATUS "[MCpp] Version: ${MCPP_VERSION_MAJOR}.${MCPP_VERSION_MINOR}.${MCPP_VERSION_PATCH}")
 
 add_compile_definitions(
         VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
-        MCPP_VERSION_MAJOR=0
-        MCPP_VERSION_MINOR=0
-        MCPP_VERSION_PATCH=1
+        MCPP_VERSION_MAJOR=${MCPP_VERSION_MAJOR}
+        MCPP_VERSION_MINOR=${MCPP_VERSION_MINOR}
+        MCPP_VERSION_PATCH=${MCPP_VERSION_PATCH}
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -26,7 +31,7 @@ else ()
     set(GLM_ENABLE_FAST_MATH ON)
 endif ()
 
-message("Getting spdlog ...")
+message(STATUS "[MCpp] Getting spdlog ...")
 set(SPDLOG_USE_STD_FORMAT true)
 FetchContent_Declare(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog
@@ -35,6 +40,7 @@ FetchContent_Declare(spdlog
 FetchContent_MakeAvailable(spdlog)
 set_target_properties(spdlog PROPERTIES FOLDER "spdlog")
 
+message(STATUS "[MCpp] Getting glm ...")
 set(GLM_ENABLE_CXX_20 ON FORCE CACHE BOOL "" FORCE)
 set(GLM_BUILD_LIBRARY ON FORCE CACHE BOOL "" FORCE)
 set(GLM_TEST_ENABLE OFF FORCE CACHE BOOL "" FORCE)
@@ -54,8 +60,6 @@ FetchContent_Declare(glm
         GIT_REPOSITORY https://github.com/g-truc/glm
         GIT_TAG 1.0.2
 )
-
-message("Getting glm ...")
 FetchContent_MakeAvailable(glm)
 set_target_properties(glm uninstall
         test-bug_ms_vec_static
@@ -67,7 +71,20 @@ set_target_properties(glm uninstall
         PROPERTIES FOLDER "glm"
 )
 
-message("Getting glfw ...")
+message(STATUS "[MCpp] Getting asio ...")
+FetchContent_Declare(asio
+        GIT_REPOSITORY https://github.com/chriskohlhoff/asio
+        GIT_COMMIT 55684d42ac00021b4c31ba8571aca414c863ead5
+)
+FetchContent_MakeAvailable(asio)
+find_package(Threads REQUIRED)
+file(GLOB_RECURSE ASIO_SOURCES "${asio_SOURCE_DIR}/include/**.h*")
+add_library(asio STATIC "${ASIO_SOURCES}")
+target_include_directories(asio PUBLIC "${asio_SOURCE_DIR}/include")
+target_link_libraries(asio INTERFACE Threads::Threads)
+set_target_properties(asio PROPERTIES LINKER_LANGUAGE CXX FOLDER "asio")
+
+message(STATUS "[MCpp] Getting glfw ...")
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -79,71 +96,85 @@ FetchContent_Declare(glfw
 )
 FetchContent_MakeAvailable(glfw)
 
-message("Getting imgui ...")
+message(STATUS "[MCpp] Getting stb ...")
+FetchContent_Declare(stb
+        GIT_REPOSITORY https://github.com/nothings/stb
+        GIT_COMMIT f1c79c02822848a9bed4315b12c8c8f3761e1296
+)
+FetchContent_MakeAvailable(stb)
+
+message(STATUS "[MCpp] Getting imgui ...")
 FetchContent_Declare(imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui
         GIT_TAG v1.92.5#-docking
 )
 FetchContent_MakeAvailable(imgui)
 
-message("Getting stb ...")
-FetchContent_Declare(stb
-        GIT_REPOSITORY https://github.com/nothings/stb
-        GIT_COMMIT f1c79c02822848a9bed4315b12c8c8f3761e1296
-)
-FetchContent_MakeAvailable(stb)
-add_library(stb INTERFACE "${stb_SOURCE_DIR}")
-set_target_properties(stb PROPERTIES FOLDER "stb")
-
-message("Getting asio ...")
-FetchContent_Declare(asio
-        GIT_REPOSITORY https://github.com/chriskohlhoff/asio
-        GIT_COMMIT 55684d42ac00021b4c31ba8571aca414c863ead5
-)
-FetchContent_MakeAvailable(asio)
-add_library(asio INTERFACE "${asio_SOURCE_DIR}/include")
-find_package(Threads REQUIRED)
-target_link_libraries(asio INTERFACE Threads::Threads)
-set_target_properties(asio PROPERTIES FOLDER "asio")
-
-message("Finding Vulkan Sdk ...")
-find_package(Vulkan REQUIRED)
+message(STATUS "[MCpp] Finding Vulkan Sdk ...")
+find_package(Vulkan REQUIRED COMPONENTS glslang SPIRV-Tools)
 if (NOT Vulkan_FOUND)
-    message(FATAL_ERROR "Failed to Find Vulkan Sdk!")
+    message(FATAL_ERROR "Failed to Find Vulkan SDK! Did you set VULKAN_SDK in your Environment Variables?")
+endif ()
+if (NOT Vulkan_SPIRV-Tools_FOUND)
+    message(FATAL_ERROR "Failed to Find Vulkan SPIRV-Tools! Did you set VULKAN_SDK in your Environment Variables?")
 endif ()
 
+message(STATUS "[MCpp] Getting shaderc ...")
+set(SHADERC_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_TESTS ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_EXAMPLES ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_EXECUTABLES ON CACHE BOOL "" FORCE)
+set(SHADERC_SKIP_COPYRIGHT_CHECK ON CACHE BOOL "" FORCE)
+set(SHADERC_ENABLE_WGSL_OUTPUT OFF CACHE BOOL "" FORCE)
+add_library(glslang ALIAS Vulkan::glslang)
+add_library(SPIRV-Tools ALIAS Vulkan::SPIRV-Tools)
+FetchContent_Declare(shaderc
+        GIT_REPOSITORY https://github.com/google/shaderc
+        GIT_TAG v2025.5
+)
+FetchContent_MakeAvailable(shaderc)
+set_target_properties(shaderc shaderc_shared shaderc_util shaderc_combined
+        shaderc-pkg-config shaderc_combined-pkg-config shaderc_static-pkg-config
+        add-copyright build-version testdata
+        glslc
+        PROPERTIES FOLDER "shaderc"
+)
+
+
 file(GLOB_RECURSE COMMON_LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/Common-Lib/**.c*")
-file(GLOB_RECURSE COMMON_LIB_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/Common-Lib/**.h*")
-add_library(Common-Lib STATIC "${COMMON_LIB_SOURCES};${COMMON_LIB_HEADERS}")
+add_library(Common-Lib STATIC "${COMMON_LIB_SOURCES}")
 target_compile_features(Common-Lib PUBLIC cxx_std_23)
+target_include_directories(Common-Lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Common-Lib")
 target_link_libraries(Common-Lib PUBLIC spdlog glm asio)
 
 file(GLOB_RECURSE SERVER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/Server/**.c*")
 file(GLOB_RECURSE SERVER_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/Server/**.h*")
 add_executable(Server "${SERVER_SOURCES};${SERVER_HEADERS}")
+target_include_directories(Server PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Server")
 target_compile_features(Server PUBLIC cxx_std_23)
 target_link_libraries(Server PUBLIC spdlog glm asio Common-Lib)
 
 file(GLOB_RECURSE CLIENT_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/Client/**.c*")
 file(GLOB_RECURSE CLIENT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/Client/**.h*")
 add_executable(Client "${CLIENT_SOURCES};${CLIENT_HEADERS}")
+target_include_directories(Client PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Client")
 target_compile_features(Client PUBLIC cxx_std_23)
-target_link_libraries(Client PUBLIC spdlog glm asio glfw Common-Lib stb ${Vulkan_LIBRARIES})
-target_include_directories(Client PUBLIC ${Vulkan_INCLUDE_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends")
-target_link_directories(Client PUBLIC ${Vulkan_LIBRARY_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends")
+target_link_libraries(Client PUBLIC spdlog glm asio Common-Lib glfw ${Vulkan_LIBRARIES} )#shaderc) TODO: fix shaderc not compiling
+target_include_directories(Client PUBLIC ${Vulkan_INCLUDE_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends" ${stb_SOURCE_DIR})
+target_link_directories(Client PUBLIC ${Vulkan_LIBRARY_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends" ${stb_SOURCE_DIR})
 
-if (WIN32)
+if (DEFINED WIN32)
     # Stop Microsoft from whining
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 
-    if (MSVC) # If using the Visual Studio Compiler
+    if (DEFINED MSVC) # If using the Visual Studio Compiler
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-        if (CMAKE_BUILD_TYPE STREQUAL "Release") # Disable the Console from Clients only on Distribution builds
-            set_target_properties(Client PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-        else ()
+        if (CMAKE_BUILD_TYPE STREQUAL "Debug") # Enable Console for Client on Debug Builds
             set_target_properties(Client PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+        else ()
+            set_target_properties(Client PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
         endif ()
 
         set_target_properties(Server PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")

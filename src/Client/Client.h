@@ -3,11 +3,17 @@
 #include <memory>
 
 #include "spdlog/spdlog.h"
-#include "vulkan/vulkan_raii.hpp"
 #include "GLFW/glfw3.h"
 
-class Client final {
+#include "VulkanHandler.h"
+#include "ResourceManager.h"
+
+class Client final
+{
 public:
+    // Tasks are executed before rendering a frame (they are only processed if the window is not minimized)
+    static void addClientTask(const std::function<void(const Client&)> &a_task);
+
     Client();
 
     ~Client();
@@ -15,34 +21,23 @@ public:
     [[nodiscard]]
     int run() const;
 
-private:
-    std::shared_ptr<spdlog::logger> m_logger;
-    GLFWwindow *m_glfwWindow = nullptr;
-    vk::ApplicationInfo m_vkAppInfo;
-    vk::raii::Context m_vkContext;
-    vk::raii::Instance m_vkInstance = nullptr;
-    vk::raii::PhysicalDevice m_vkPhysicalDevice = nullptr;
-    uint32_t m_vkQueueFamilyIndex = -1;
-    vk::raii::Device m_vkDevice = nullptr;
-    vk::raii::Queue m_vkGraphicsQueue = nullptr;
-    vk::raii::Queue m_vkPresentQueue = nullptr;
-    vk::raii::SurfaceKHR m_vkSurface = nullptr;
-    vk::raii::DebugUtilsMessengerEXT m_debugMessenger = nullptr;
+    void setFullscreen(bool a_fullscreen) const;
 
-    void initGLFW() const;
-
-    void initVulkan();
-
-    void createWindow();
-
-    void pickVkDevice();
-
-    struct CheckDeviceResult {
-        bool isSuitable = false;
-        size_t graphicsQueueFamilyIndex = -1;
-        size_t presentQueueFamilyIndex = -1;
+    void toggleFullscreen() const
+    {
+        setFullscreen(!m_fullscreen);
     };
 
-    [[nodiscard]]
-    CheckDeviceResult isDeviceSuitable(const vk::PhysicalDevice &a_device, const std::vector<const char *> &a_requiredDeviceExtensions) const;
+    void onWindowClose(const GLFWwindow *a_glfwWindow);
+
+    void onWindowResize(const GLFWwindow *a_glfwWindow, int a_width, int a_height);
+
+private:
+    std::shared_ptr<spdlog::logger> m_logger;
+    VulkanHandler m_vulkanHandler = nullptr;
+    ResourceManager m_resourceManager = nullptr;
+    GLFWwindow *m_glfwWindow = nullptr;
+    bool m_running = true;
+    bool m_minimized = false;
+    bool m_fullscreen = false;
 };

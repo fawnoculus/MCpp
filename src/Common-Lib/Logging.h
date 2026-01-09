@@ -6,7 +6,8 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/async.h"
 
-namespace Logging {
+namespace Logging
+{
     // Setup logging sinks (aka: log files) & the logger pattern
     void setupLogging();
 
@@ -24,7 +25,8 @@ namespace Logging {
 
     // Create a logger & register it, will throw an exception if a logger with that name already exist
     [[nodiscard]]
-    inline std::shared_ptr<spdlog::logger> makeLoggerOrThrow(const std::string &name) {
+    inline std::shared_ptr<spdlog::logger> makeLoggerOrThrow(const std::string &name)
+    {
         return makeLoggerOrThrow(name, spdlog::thread_pool(), spdlog::async_overflow_policy::block);
     }
 
@@ -33,7 +35,8 @@ namespace Logging {
     inline std::shared_ptr<spdlog::logger> makeLoggerOrThrow(
         const std::string &name,
         const std::shared_ptr<spdlog::details::thread_pool> &threadPool
-    ) {
+    )
+    {
         return makeLoggerOrThrow(name, threadPool, spdlog::async_overflow_policy::block);
     }
 
@@ -42,12 +45,14 @@ namespace Logging {
     inline std::shared_ptr<spdlog::logger> makeLoggerOrThrow(
         const std::string &name,
         const spdlog::async_overflow_policy overflowPolicy
-    ) {
+    )
+    {
         return makeLoggerOrThrow(name, spdlog::thread_pool(), overflowPolicy);
     }
 
     [[nodiscard]]
-    constexpr std::shared_ptr<spdlog::sinks::basic_file_sink_mt> makeDateSink() {
+    constexpr std::shared_ptr<spdlog::sinks::basic_file_sink_mt> makeDateSink()
+    {
         const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         const std::tm *localtimeNow = std::localtime(&now);
 
@@ -56,7 +61,8 @@ namespace Logging {
         std::string date = buffer;
 
         int32_t extraDigit = 1;
-        while (std::filesystem::exists(std::format("logs/{}-{}.log", date, extraDigit))) {
+        while (std::filesystem::exists(std::format("logs/{}-{}.log", date, extraDigit)))
+        {
             extraDigit++;
         }
 

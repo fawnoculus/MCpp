@@ -4,7 +4,8 @@
 
 #include "spdlog/spdlog.h"
 
-class DedicatedServer final {
+class DedicatedServer final
+{
 public:
     DedicatedServer();
 

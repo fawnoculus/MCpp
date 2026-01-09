@@ -3,12 +3,14 @@
 
 #include "Logging.h"
 
-namespace Logging {
+namespace Logging
+{
     std::shared_ptr<spdlog::logger> makeLoggerOrThrow(
         const std::string &name,
         const std::shared_ptr<spdlog::details::thread_pool> &threadPool,
         const spdlog::async_overflow_policy overflowPolicy
-    ) {
+    )
+    {
         std::vector<spdlog::sink_ptr> sinks;
         sinks.reserve(4);
         sinks.push_back(g_stdoutSink);
@@ -27,9 +29,11 @@ namespace Logging {
         return logger;
     }
 
-    std::shared_ptr<spdlog::logger> getLogger(const std::string &name) {
+    std::shared_ptr<spdlog::logger> getLogger(const std::string &name)
+    {
         auto logger = spdlog::get(name);
-        if (!logger) {
+        if (!logger)
+        {
             logger = makeLoggerOrThrow(name, spdlog::thread_pool(), spdlog::async_overflow_policy::block);
         }
 
@@ -37,7 +41,8 @@ namespace Logging {
     }
 
 
-    void setupLogging() {
+    void setupLogging()
+    {
         if (g_isInitialized) return;
         g_isInitialized = true;
 
