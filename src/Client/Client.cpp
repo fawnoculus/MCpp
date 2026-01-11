@@ -1,13 +1,13 @@
 #include <cmath>
-#include <stdfloat>
 
 #include "GLFW/glfw3.h"
 #include "spdlog/spdlog.h"
+#include "glm/fwd.hpp"
 
 #include "Logging.h"
 #include "Client.h"
 
-using std::string, std::vector, std::optional, std::shared_ptr, std::float64_t;
+using std::string, std::vector, std::optional, std::shared_ptr, glm::float64_t;
 
 constexpr int g_windowWidth = 854;
 constexpr int g_windowHeight = 480;

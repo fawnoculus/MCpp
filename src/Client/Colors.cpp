@@ -1,11 +1,11 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <stdfloat>
 
+#include "glm/fwd.hpp"
 #include "glm/vec3.hpp"
 
-using std::float32_t;
+using glm::float32_t;
 using glm::vec3;
 
 namespace Colors
