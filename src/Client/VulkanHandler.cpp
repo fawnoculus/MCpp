@@ -272,7 +272,7 @@ void VulkanHandler::pickVkDevice()
         throw std::runtime_error("Failed to find Physical Vulkan device that meets the minimum requirements");
     }
 
-    m_logger->debug("Picked Physical Vulkan device: {}", string(currentBest.getProperties().deviceName));
+    m_logger->debug("Picked Physical Vulkan device: {}", vkArrayToString(currentBest.getProperties().deviceName));
     m_vkPhysicalDevice.clear();
     m_vkPhysicalDevice = currentBest;
 
