@@ -377,8 +377,8 @@ VulkanHandler::CheckDeviceResult VulkanHandler::checkVkDevice(const vk::Physical
     }
 
     const std::vector<vk::QueueFamilyProperties> queueFamilyProperties = a_device.getQueueFamilyProperties();
-    size_t graphicsQueueFamilyIndex = -1;
-    size_t presentQueueFamilyIndex = -1;
+    auto graphicsQueueFamilyIndex = static_cast<size_t>(-1);
+    auto presentQueueFamilyIndex = static_cast<size_t>(-1);
     for (size_t i = 0; i < queueFamilyProperties.size(); i++)
     {
         if (queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
