@@ -47,8 +47,8 @@ private:
 
     struct CheckDeviceResult
     {
-        size_t graphicsQueueFamilyIndex = -1;
-        size_t presentQueueFamilyIndex = -1;
+        size_t graphicsQueueFamilyIndex = static_cast<size_t>(-1);
+        size_t presentQueueFamilyIndex = static_cast<size_t>(-1);
         bool isSuitable = false;
         std::optional<vk::SurfaceFormatKHR> surfaceFormat = {};
     };
