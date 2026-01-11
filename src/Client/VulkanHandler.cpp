@@ -33,6 +33,12 @@ VKAPI_ATTR vk::Bool32 VKAPI_CALL vkDebugCallback(
     return VK_FALSE;
 }
 
+template<size_t charCount>
+string vkArrayToString(vk::ArrayWrapper1D<char, charCount> array)
+{
+    return string(array.data(), charCount);
+}
+
 VulkanHandler::VulkanHandler(const std::shared_ptr<spdlog::logger> &a_logger)
     : m_logger(a_logger)
 {
@@ -71,8 +77,7 @@ void VulkanHandler::initialize()
     string supportedLayers = "[";
     for (auto layerProperty: layerProperties)
     {
-        supportedLayers.append(std::format("\"{}\": \"{}\", ", string(layerProperty.layerName),
-                                           string(layerProperty.description)));
+        supportedLayers.append(std::format("\"{}\": \"{}\", ", vkArrayToString(layerProperty.layerName), vkArrayToString(layerProperty.description)));
     }
     supportedLayers.append("]");
     m_logger->debug("Supported Vulkan Layers: {}", supportedLayers);
@@ -102,7 +107,7 @@ void VulkanHandler::initialize()
     string supportedProperties = "[";
     for (auto [extensionName, specVersion]: extensionProperties)
     {
-        supportedProperties.append(std::format("\"{}\", ", string(extensionName)));
+        supportedProperties.append(std::format("\"{}\", ", vkArrayToString(extensionName)));
     }
     supportedProperties.append("]");
     m_logger->debug("Supported Vulkan Extensions: {}", supportedProperties);
@@ -313,7 +318,7 @@ void VulkanHandler::pickVkDevice()
         m_resourceManager->setVkDevice(m_vkDevice);
     }
 
-    for (GraphicsPipeline *pipeline : m_graphicsPipelines)
+    for (GraphicsPipeline *pipeline: m_graphicsPipelines)
     {
         if (pipeline != nullptr)
         {
