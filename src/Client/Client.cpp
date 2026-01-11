@@ -118,7 +118,7 @@ int Client::run() const
             continue;
         }
 
-        std::chrono::time_point<std::chrono::system_clock> frameStart = std::chrono::high_resolution_clock::now();
+        std::chrono::time_point<std::chrono::high_resolution_clock> frameStart = std::chrono::high_resolution_clock::now();
         glfwPollEvents();
 
         {
@@ -135,7 +135,7 @@ int Client::run() const
 
         // TODO: do rendering here
 
-        std::chrono::time_point<std::chrono::system_clock> frameEnd = std::chrono::high_resolution_clock::now();
+        std::chrono::time_point<std::chrono::high_resolution_clock> frameEnd = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float64_t> elapsed_seconds = frameEnd - frameStart;
         const float64_t fps = 1.f / elapsed_seconds.count();
         glfwSetWindowTitle(m_glfwWindow, std::format("MCpp @{}FPS", round(fps)).c_str());
