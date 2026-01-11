@@ -51,7 +51,7 @@ namespace Logging
     }
 
     [[nodiscard]]
-    constexpr std::shared_ptr<spdlog::sinks::basic_file_sink_mt> makeDateSink()
+    inline std::shared_ptr<spdlog::sinks::basic_file_sink_mt> makeDateSink()
     {
         const std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         const std::tm *localtimeNow = std::localtime(&now);
