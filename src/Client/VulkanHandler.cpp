@@ -71,7 +71,7 @@ void VulkanHandler::initialize()
     string supportedLayers = "[";
     for (auto layerProperty: layerProperties)
     {
-        supportedLayers.append(std::format(R"("{}": "{}", )", string(layerProperty.layerName),
+        supportedLayers.append(std::format("\"{}\": \"{}\", ", string(layerProperty.layerName),
                                            string(layerProperty.description)));
     }
     supportedLayers.append("]");
@@ -102,7 +102,7 @@ void VulkanHandler::initialize()
     string supportedProperties = "[";
     for (auto [extensionName, specVersion]: extensionProperties)
     {
-        supportedProperties.append(std::format(R"("{}", )", string(extensionName)));
+        supportedProperties.append(std::format("\"{}\", ", string(extensionName)));
     }
     supportedProperties.append("]");
     m_logger->debug("Supported Vulkan Extensions: {}", supportedProperties);
