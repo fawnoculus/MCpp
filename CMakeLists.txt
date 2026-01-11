@@ -119,27 +119,6 @@ if (NOT Vulkan_SPIRV-Tools_FOUND)
     message(FATAL_ERROR "Failed to Find Vulkan SPIRV-Tools! Did you set VULKAN_SDK in your Environment Variables?")
 endif ()
 
-message(STATUS "[MCpp] Getting shaderc ...")
-set(SHADERC_SKIP_INSTALL ON CACHE BOOL "" FORCE)
-set(SHADERC_SKIP_TESTS ON CACHE BOOL "" FORCE)
-set(SHADERC_SKIP_EXAMPLES ON CACHE BOOL "" FORCE)
-set(SHADERC_SKIP_EXECUTABLES ON CACHE BOOL "" FORCE)
-set(SHADERC_SKIP_COPYRIGHT_CHECK ON CACHE BOOL "" FORCE)
-set(SHADERC_ENABLE_WGSL_OUTPUT OFF CACHE BOOL "" FORCE)
-add_library(glslang ALIAS Vulkan::glslang)
-add_library(SPIRV-Tools ALIAS Vulkan::SPIRV-Tools)
-FetchContent_Declare(shaderc
-        GIT_REPOSITORY https://github.com/google/shaderc
-        GIT_TAG v2025.5
-)
-FetchContent_MakeAvailable(shaderc)
-set_target_properties(shaderc shaderc_shared shaderc_util shaderc_combined
-        shaderc-pkg-config shaderc_combined-pkg-config shaderc_static-pkg-config
-        add-copyright build-version testdata
-        glslc
-        PROPERTIES FOLDER "shaderc"
-)
-
 
 file(GLOB_RECURSE COMMON_LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/Common-Lib/**.c*")
 add_library(Common-Lib STATIC "${COMMON_LIB_SOURCES}")
@@ -159,7 +138,7 @@ file(GLOB_RECURSE CLIENT_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/Client/**.h*")
 add_executable(Client "${CLIENT_SOURCES};${CLIENT_HEADERS}")
 target_include_directories(Client PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Client")
 target_compile_features(Client PUBLIC cxx_std_23)
-target_link_libraries(Client PUBLIC spdlog glm asio Common-Lib glfw ${Vulkan_LIBRARIES} )#shaderc) TODO: fix shaderc not compiling
+target_link_libraries(Client PUBLIC spdlog glm asio Common-Lib glfw ${Vulkan_LIBRARIES} )
 target_include_directories(Client PUBLIC ${Vulkan_INCLUDE_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends" ${stb_SOURCE_DIR})
 target_link_directories(Client PUBLIC ${Vulkan_LIBRARY_DIRS} ${imgui_SOURCE_DIR} "${imgui_SOURCE_DIR}/backends" ${stb_SOURCE_DIR})
 

@@ -61,7 +61,7 @@ Client::Client()
         m_logger->error("Failed to initialize GLFW");
         throw std::runtime_error("Failed to initialize GLFW");
     }
-    glfwSetErrorCallback(glfwError);
+    glfwSetErrorCallback(&glfwError);
 
     if (glfwVulkanSupported() != GLFW_TRUE)
     {
@@ -84,8 +84,8 @@ Client::Client()
         throw std::runtime_error("Failed to create Window");
     }
     glfwSetWindowSizeLimits(m_glfwWindow, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    glfwSetWindowCloseCallback(m_glfwWindow, glfwWindowClose);
-    glfwSetWindowSizeCallback(m_glfwWindow, glfwWindowResize);
+    glfwSetWindowCloseCallback(m_glfwWindow, &glfwWindowClose);
+    glfwSetWindowSizeCallback(m_glfwWindow, &glfwWindowResize);
     m_vulkanHandler.setWindow(m_glfwWindow);
     glfwShowWindow(m_glfwWindow);
 
