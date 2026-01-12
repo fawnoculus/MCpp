@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <format>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,15 +15,32 @@ namespace Utils
     class Identifier final
     {
     public:
+        [[nodiscard]]
         static std::optional<Identifier> of(const string &a_namespace, const string &a_path);
 
+        [[nodiscard]]
         static std::optional<Identifier> ofVanilla(const string &a_path);
 
+        [[nodiscard]]
         static std::optional<Identifier> of(const string &a_string);
 
+        [[nodiscard]]
         static std::optional<Identifier> parse(const string &a_string);
 
+        [[nodiscard]]
         static Identifier ofUnsafe(const string &a_namespace, const string &a_path);
+
+        [[nodiscard]]
+        static bool isNamespaceValid(const string &a_namespace);
+
+        [[nodiscard]]
+        static bool isNamespaceCharValid(const char c);
+
+        [[nodiscard]]
+        static bool isPathValid(const string &a_path);
+
+        [[nodiscard]]
+        static bool isPathCharValid(const char c);
 
         [[nodiscard]]
         string getNamespace() const;
@@ -42,13 +60,8 @@ namespace Utils
         [[nodiscard]]
         Identifier withSuffixedPath(const string &a_suffix) const;
 
-        static bool isNamespaceValid(const string &a_namespace);
-
-        static bool isNamespaceCharValid(const char c);
-
-        static bool isPathValid(const string &a_path);
-
-        static bool isPathCharValid(const char c);
+        [[nodiscard]]
+        string toString() const;
 
     private:
         Identifier(string a_namespace, string a_path)

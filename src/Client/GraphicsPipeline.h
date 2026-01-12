@@ -3,7 +3,8 @@
 #include "spdlog/spdlog.h"
 #include "vulkan/vulkan_raii.hpp"
 
-#include <Utils/Identifier.h>
+#include "Utils/Identifier.h"
+#include "ResourceManager.h"
 
 using std::optional;
 
@@ -14,12 +15,16 @@ public:
 
     GraphicsPipeline(std::nullptr_t) {}
 
-    explicit GraphicsPipeline(const Utils::Identifier& a_identifier);
+    explicit GraphicsPipeline(const std::shared_ptr<spdlog::logger> &a_logger, const ResourceManager &resourceManager, const Utils::Identifier &a_identifier);
 
-    void setVkDevice(const vk::raii::Device& a_device);
+    void setVkDevice(const vk::raii::Device &a_device, const vk::Extent2D &a_vkSwapExtent);
 
 private:
-    optional<vk::ShaderModuleCreateInfo> m_vkVertexShaderCreateInfo = {};
-    optional<vk::ShaderModuleCreateInfo> m_vkTessellationShaderCreateInfo = {};
-    optional<vk::ShaderModuleCreateInfo> m_vkFragmentShaderCreateInfo = {};
+    std::shared_ptr<spdlog::logger> m_logger = nullptr;
+    std::vector<uint32_t> m_vertexSpirV;
+    std::vector<uint32_t> m_fragmentSpirV;
+    vk::ShaderModuleCreateInfo m_vkFragmentShaderCreateInfo;
+    vk::ShaderModuleCreateInfo m_vkVertexShaderCreateInfo;
+    vk::raii::PipelineLayout m_vkPipelineLayout = nullptr;
+    vk::raii::Pipeline m_vkGraphicsPipeline = nullptr;
 };

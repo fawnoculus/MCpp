@@ -1,7 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 
 #include "Client.h"
-#include "Logging.h"
 #include "spdlog/spdlog.h"
 
 int main()

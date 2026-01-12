@@ -2,6 +2,7 @@
 
 using Utils::Identifier;
 
+[[nodiscard]]
 std::optional<Identifier> Identifier::of(const string &a_namespace, const string &a_path)
 {
     if (isNamespaceValid(a_namespace) && isPathValid(a_path))
@@ -11,6 +12,7 @@ std::optional<Identifier> Identifier::of(const string &a_namespace, const string
     return {};
 }
 
+[[nodiscard]]
 std::optional<Identifier> Identifier::ofVanilla(const string &a_path)
 {
     if (isPathValid(a_path))
@@ -20,6 +22,7 @@ std::optional<Identifier> Identifier::ofVanilla(const string &a_path)
     return {};
 }
 
+[[nodiscard]]
 std::optional<Identifier> Identifier::of(const string &a_string)
 {
     if (const size_t i = a_string.find(':'); i != string::npos)
@@ -34,6 +37,7 @@ std::optional<Identifier> Identifier::of(const string &a_string)
     return ofVanilla(a_string);
 }
 
+[[nodiscard]]
 std::optional<Identifier> Identifier::parse(const string &a_string)
 {
     if (const size_t i = a_string.find(':'); i != string::npos && i != 0)
@@ -43,9 +47,34 @@ std::optional<Identifier> Identifier::parse(const string &a_string)
     return {};
 }
 
+[[nodiscard]]
 Identifier Identifier::ofUnsafe(const string &a_namespace, const string &a_path)
 {
     return {a_namespace, a_path};
+}
+
+[[nodiscard]]
+bool Identifier::isNamespaceValid(const string &a_namespace)
+{
+    return std::ranges::all_of(a_namespace, &isNamespaceCharValid);
+}
+
+[[nodiscard]]
+bool Identifier::isNamespaceCharValid(const char c)
+{
+    return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
+}
+
+[[nodiscard]]
+bool Identifier::isPathValid(const string &a_path)
+{
+    return std::ranges::all_of(a_path, &isPathCharValid);
+}
+
+[[nodiscard]]
+bool Identifier::isPathCharValid(const char c)
+{
+    return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
 }
 
 [[nodiscard]]
@@ -84,22 +113,8 @@ Identifier Identifier::withSuffixedPath(const string &a_suffix) const
     return withPath(this->getPath() + a_suffix);
 }
 
-bool Identifier::isNamespaceValid(const string &a_namespace)
+[[nodiscard]]
+string Identifier::toString() const
 {
-    return std::ranges::all_of(a_namespace, &isNamespaceCharValid);
-}
-
-bool Identifier::isNamespaceCharValid(const char c)
-{
-    return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
-}
-
-bool Identifier::isPathValid(const string &a_path)
-{
-    return std::ranges::all_of(a_path, &isPathCharValid);
-}
-
-bool Identifier::isPathCharValid(const char c)
-{
-    return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
+    return std::format("{}:{}", m_namespace, m_path);
 }

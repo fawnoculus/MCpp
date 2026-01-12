@@ -75,7 +75,7 @@ void VulkanHandler::initialize()
     auto layerProperties = m_vkContext.enumerateInstanceLayerProperties();
 
     string supportedLayers = "[";
-    for (auto layerProperty: layerProperties)
+    for (const auto layerProperty: layerProperties)
     {
         supportedLayers.append(std::format("\"{}\": \"{}\", ", vkArrayToString(layerProperty.layerName), vkArrayToString(layerProperty.description)));
     }
@@ -313,6 +313,22 @@ void VulkanHandler::pickVkDevice()
     m_vkSurfaceFormat = currentBestCheckResult.surfaceFormat.value();
     m_vkSwapChainImageFormat = m_vkSurfaceFormat.format;
 
+    vk::CommandPoolCreateInfo poolInfo{
+        .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+        .queueFamilyIndex = m_vkGraphicsQueueFamilyIndex
+    };
+
+    m_vkCommandPool = vk::raii::CommandPool(m_vkDevice, poolInfo);
+
+    vk::CommandBufferAllocateInfo allocInfo{
+        .commandPool = m_vkCommandPool,
+        .level = vk::CommandBufferLevel::ePrimary,
+        .commandBufferCount = 1
+    };
+
+    m_vkCommandBuffer = std::move(vk::raii::CommandBuffers(m_vkDevice, allocInfo).front());
+
+
     if (m_resourceManager != nullptr)
     {
         m_resourceManager->setVkDevice(m_vkDevice);
@@ -322,7 +338,7 @@ void VulkanHandler::pickVkDevice()
     {
         if (pipeline != nullptr)
         {
-            pipeline->setVkDevice(m_vkDevice);
+            pipeline->setVkDevice(m_vkDevice, m_vkSwapExtent);
         }
     }
 }

@@ -14,7 +14,7 @@ constexpr int g_windowHeight = 480;
 shared_ptr<spdlog::logger> g_glfwLogger = nullptr;
 Client *g_client = nullptr;
 std::mutex g_clientTasksMutex;
-vector<std::function<void(const Client&)>> g_clientTasks;
+vector<std::function<void(const Client &)>> g_clientTasks;
 
 void glfwError(const int a_errorCode, const char *a_description)
 {
@@ -89,6 +89,8 @@ Client::Client()
     m_vulkanHandler.setWindow(m_glfwWindow);
     glfwShowWindow(m_glfwWindow);
 
+    m_testPipeline = GraphicsPipeline(m_logger, m_resourceManager, Utils::Identifier::ofVanilla("test").value());
+
     m_logger->info("Finished Client initialisation");
 }
 
@@ -105,12 +107,21 @@ Client::~Client()
     m_logger->flush();
 }
 
-int Client::run() const
+int Client::run()
 {
     m_logger->info("Running Client ...");
 
     while (m_running)
     {
+        {
+            std::lock_guard guard(g_clientTasksMutex);
+            for (const std::function<void(const Client &)> &clientTask: g_clientTasks)
+            {
+                clientTask(*this);
+            }
+            g_clientTasks.clear();
+        }
+
         if (m_minimized)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -120,15 +131,6 @@ int Client::run() const
 
         std::chrono::time_point<std::chrono::high_resolution_clock> frameStart = std::chrono::high_resolution_clock::now();
         glfwPollEvents();
-
-        {
-            std::lock_guard guard(g_clientTasksMutex);
-            for (const std::function<void(const Client&)>& clientTask : g_clientTasks)
-            {
-                clientTask(*this);
-            }
-            g_clientTasks.clear();
-        }
 
         // 1000 FPS baby TODO: make an actually competent frame-time counter
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -148,8 +150,8 @@ void Client::setFullscreen(const bool a_fullscreen) const
 {
     if (a_fullscreen)
     {
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
         glfwSetWindowMonitor(m_glfwWindow, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
     } else
     {

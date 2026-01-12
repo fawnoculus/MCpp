@@ -24,7 +24,7 @@ private:
     std::shared_ptr<spdlog::logger> m_logger = nullptr;
     ResourceManager *m_resourceManager = nullptr;
     GLFWwindow *m_glfwWindow = nullptr;
-    std::vector<GraphicsPipeline*> m_graphicsPipelines;
+    std::vector<GraphicsPipeline *> m_graphicsPipelines;
     vk::ApplicationInfo m_vkAppInfo;
     vk::raii::Context m_vkContext;
     vk::raii::Instance m_vkInstance = nullptr;
@@ -41,6 +41,8 @@ private:
     vk::raii::SwapchainKHR m_vkSwapChain = nullptr;
     std::vector<vk::Image> m_vkSwapChainImages;
     std::vector<vk::raii::ImageView> m_vkSwapChainImageViews;
+    vk::raii::CommandPool m_vkCommandPool = nullptr;
+    vk::raii::CommandBuffer m_vkCommandBuffer = nullptr;
     vk::raii::DebugUtilsMessengerEXT m_vkDebugMessenger = nullptr;
 
     void pickVkDevice();

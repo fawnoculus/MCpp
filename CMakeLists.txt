@@ -37,7 +37,7 @@ else ()
 endif ()
 
 include("Dependencies.cmake")
-include_directories("src")
+add_subdirectory("src")
 
 if (DEFINED WIN32)
     # Stop Microsoft from whining
