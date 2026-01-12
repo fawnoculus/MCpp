@@ -85,10 +85,14 @@ FetchContent_Declare(imgui
 )
 FetchContent_MakeAvailable(imgui)
 file(GLOB IMGUI_SOURCES "${imgui_SOURCE_DIR}/**.c*")
-file(GLOB IMGUI_BACKEND_SOURCES "${imgui_SOURCE_DIR}/backends/**.c*")
-add_library(imgui STATIC ${IMGUI_SOURCES} ${IMGUI_BACKEND_SOURCES})
+file(GLOB IMGUI_BACKEND_SOURCES )
+add_library(imgui STATIC ${IMGUI_SOURCES}
+        "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
+        "${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp"
+)
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
 set_target_properties(imgui PROPERTIES FOLDER "dependencies/imgui")
+target_link_libraries(imgui PUBLIC Vulkan::Headers Vulkan::Vulkan)
 
 message(STATUS "[MCpp] Finding Vulkan Sdk ...")
 add_compile_definitions(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)

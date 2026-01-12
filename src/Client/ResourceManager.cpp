@@ -13,10 +13,6 @@ glslang::SpvOptions g_spvOptions{
 };
 
 [[nodiscard]]
-expected<vector<uint32_t>, string> compileGLSLShader(const EShLanguage stage, const std::string &glslCode)
-{}
-
-[[nodiscard]]
 bool isResourceDirectoryValid(const std::filesystem::path &a_path)
 {
     return std::filesystem::is_directory(a_path / "assets" / "vanilla" / "lang")
