@@ -53,8 +53,8 @@ FetchContent_Declare(asio
 FetchContent_MakeAvailable(asio)
 find_package(Threads REQUIRED)
 file(GLOB_RECURSE ASIO_SOURCES "${asio_SOURCE_DIR}/include/**.h*")
-add_library(asio STATIC ${ASIO_SOURCES})
-target_include_directories(asio PUBLIC "${asio_SOURCE_DIR}/include")
+add_library(asio INTERFACE ${ASIO_SOURCES})
+target_include_directories(asio INTERFACE "${asio_SOURCE_DIR}/include")
 target_link_libraries(asio INTERFACE Threads::Threads)
 set_target_properties(asio PROPERTIES LINKER_LANGUAGE CXX FOLDER "dependencies/asio")
 
