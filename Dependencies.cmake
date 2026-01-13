@@ -92,7 +92,7 @@ add_library(imgui STATIC ${IMGUI_SOURCES}
 )
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
 set_target_properties(imgui PROPERTIES FOLDER "dependencies/imgui")
-target_link_libraries(imgui PUBLIC Vulkan::Headers Vulkan::Vulkan)
+target_link_libraries(imgui PUBLIC glfw Vulkan::Headers Vulkan::Vulkan)
 
 message(STATUS "[MCpp] Finding Vulkan Sdk ...")
 add_compile_definitions(VULKAN_HPP_NO_STRUCT_CONSTRUCTORS)
